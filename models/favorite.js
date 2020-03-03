@@ -6,6 +6,7 @@ const favoriteSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
+    //make campsites into an array so that favorites may be pushed to it
     campsites: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Campsite'

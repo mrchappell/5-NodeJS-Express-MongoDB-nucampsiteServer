@@ -12,6 +12,7 @@ favoriteRouter.route('/')
     .options(cors.corsWithOptions, (req, res) => res.sendStatus(200))
     .get(cors.cors, authenticate.verifyUser, (req, res, next) => {
         Favorite.find({ user: req.user._id })
+        //populates user and campsite refs
             .populate('user.ref')
             .populate('campsites.ref')
             .then(favorites => {
@@ -30,10 +31,11 @@ favoriteRouter.route('/')
                     if (favorite.campsites.indexOf(favorite._id) == -1) {
                         req.body.forEach(fav => {
                             if (!favorite.campsites.includes(fav._id)) {
-                                favorite.campsites.push(fav._id);
+                                favorite.campsites.push(fav._id); //if favorite isn't already included, pushes it to array
                             }
                         });
                     }
+                    // saves array after checking/pushing
                     favorite.save()
                         .then(favorite => {
                             res.statusCode = 200;
@@ -85,8 +87,9 @@ favoriteRouter.route('/:campsiteId')
             .then(favorite => {
                 if (favorite) {
                     if (!favorite.campsites.includes(req.params.campsiteId)) {
-                        favorite.campsites.push(req.params.campsiteId);
+                        favorite.campsites.push(req.params.campsiteId); //if campsite Id not already present, pushes it
                     }
+                    //saves after checking/pushing
                     favorite.save()
                         .then(favorite => {
                             res.statusCode = 200;
@@ -121,7 +124,7 @@ favoriteRouter.route('/:campsiteId')
                 if (favorite && favorite.campsites) {
                     const x = favorite.campsites.indexOf(req.params.campsiteId);
                     if (x !== -1) {
-                        favorite.campsites.splice(x, 1);
+                        favorite.campsites.splice(x, 1); //edits array, then saves it
                         favorite.save()
                             .then(favorite => {
                                 res.statusCode = 200;
